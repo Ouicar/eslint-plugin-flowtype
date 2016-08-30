@@ -1,7 +1,6 @@
 README.md
 node_modules
 coverage
-dist
 *.log
 .*
 !.eslintrc
