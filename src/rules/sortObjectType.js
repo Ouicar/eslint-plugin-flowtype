@@ -1,25 +1,40 @@
+const firstKeyText = 'type: ';
+
 const objectTypeAnnotationEvaluator = (context) => {
   const sourceCode = context.getSourceCode();
 
   return (objectTypeAnnotation) => {
-    const keys = objectTypeAnnotation.properties.map((property) => {
+    const properties = objectTypeAnnotation.properties.map((property) => {
       const start = property.start;
       const end = property.value.start;
-      return sourceCode.text.substring(start, end);
+      return {
+        keyText: sourceCode.text.substring(start, end),
+        node: property
+      };
     });
-    console.log(keys);
-    keys.forEach((key, index) => {
+    properties.forEach((property, index) => {
       if (index !== 0) {
-        const previousKey = keys[index - 1];
-        if (previousKey > key) {
+        const previousProperty = properties[index - 1];
+        if (property.keyText === firstKeyText) {
           context.report({
             data: {
-              key,
-              previousKey
+              key: property.keyText
+            },
+            fix: null,
+            message: 'The key `{{key}}` should be the first one.',
+            node: property.node
+          });
+        }
+        else if (previousProperty.keyText > property.keyText &&
+          previousProperty.keyText !== firstKeyText) {
+          context.report({
+            data: {
+              key: property.keyText,
+              previousKey: previousProperty.keyText
             },
             fix: null,
             message: 'The key `{{key}}` is not in alphabetical order with `{{previousKey}}`.',
-            node: objectTypeAnnotation
+            node: property.node
           });
         }
       }
