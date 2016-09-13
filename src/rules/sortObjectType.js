@@ -25,7 +25,7 @@ const objectTypeAnnotationEvaluator = (context) => {
             node: property.node
           });
         }
-        else if (previousProperty.keyText > property.keyText &&
+        else if (previousProperty.keyText.toLowerCase() > property.keyText.toLowerCase() &&
           previousProperty.keyText !== firstKeyText) {
           context.report({
             data: {
